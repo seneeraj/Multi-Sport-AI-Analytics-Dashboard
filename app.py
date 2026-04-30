@@ -32,9 +32,11 @@ with st.sidebar:
 
     st.markdown("## ⚙️ Navigation")
 
-    sport = st.radio(
+    sport_ui = st.radio(
         "Select Sport",
-        ["⚽ Football (EPL)", "🏏 Cricket (IPL)"]
+        ["⚽ Football (EPL)", "🏏 Cricket (IPL)"],
+        index=0,
+        key="sport_selector"
     )
 
     # ✅ FIX: Map emoji label → original values (DO NOT CHANGE LOGIC BELOW)
