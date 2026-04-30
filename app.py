@@ -37,9 +37,14 @@ with st.sidebar:
         ["⚽ Football (EPL)", "🏏 Cricket (IPL)"]
     )
 
+    # 🔥 FIX: Map emoji label to logic-safe value
+    if "Football" in sport:
+        sport = "Football (EPL)"
+    elif "Cricket" in sport:
+        sport = "Cricket (IPL)"
+
     st.markdown("---")
 
-    # 🎥 GIF / Visual Section
     st.markdown("## 🎬 Insights Zone")
 
     st.image(
@@ -49,7 +54,6 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # 📊 Info Section
     st.markdown("## 📊 About Dashboard")
     st.markdown("""
     - ⚽ Football Analytics  
@@ -60,11 +64,8 @@ with st.sidebar:
 
     st.markdown("---")
 
-    # 👤 Footer
     st.markdown("## 👨‍💻 Developer")
     st.markdown("Built with ❤️ using Streamlit")
-
-
 
 # ======================
 # CUSTOM CSS
@@ -114,8 +115,6 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.markdown('<div class="main-title">⚽🏏 Multi-Sport AI Analytics Dashboard</div>', unsafe_allow_html=True)
-
-sport = st.sidebar.selectbox("Select Sport", ["Football (EPL)", "Cricket (IPL)"])
 
 # ======================
 # FOOTBALL
