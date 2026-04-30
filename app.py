@@ -10,20 +10,13 @@ import os
 st.set_page_config(page_title="Sports AI Dashboard", layout="wide")
 
 # ======================
-# CUSTOM CSS (PREMIUM UI)
+# CUSTOM CSS
 # ======================
 st.markdown("""
 <style>
-.metric-card {
-    background-color: #1e1e1e;
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    color: white;
-}
 .title {
     text-align:center;
-    font-size:35px;
+    font-size:34px;
     font-weight:bold;
 }
 </style>
@@ -54,14 +47,8 @@ sport = st.sidebar.selectbox("Select Sport", ["Football (EPL)", "Cricket (IPL)"]
 # ======================
 if sport == "Football (EPL)":
 
-    file_path = "data/football_players.csv"
-    if not os.path.exists(file_path):
-        st.error("football_players.csv missing")
-        st.stop()
+    df = pd.read_csv("data/football_players.csv")
 
-    df = pd.read_csv(file_path)
-
-    # Fix column names
     df.rename(columns={
         "goals_scored": "goals",
         "ict_index": "ict",
@@ -74,15 +61,11 @@ if sport == "Football (EPL)":
     player = st.selectbox("Select Player", df["name"])
     row = df[df["name"] == player].iloc[0]
 
-    goals = row["goals"]
-    assists = row["assists"]
-    influence = row["influence"]
-
-    # KPI CARDS
+    # KPI
     col1, col2, col3 = st.columns(3)
-    col1.metric("Goals", int(goals))
-    col2.metric("Assists", int(assists))
-    col3.metric("Influence", round(influence,1))
+    col1.metric("Goals", int(row["goals"]))
+    col2.metric("Assists", int(row["assists"]))
+    col3.metric("Influence", round(row["influence"],1))
 
     # Prediction
     if st.button("Predict Score"):
@@ -90,16 +73,15 @@ if sport == "Football (EPL)":
                               row["influence"], row["creativity"], row["threat"],
                               row["ict"], row["form"], row["bps"],
                               row["clean"], row["conceded"]]])
-
         pred = model_f.predict(features)[0]
         st.success(f"🎯 Predicted Score: {round(pred,2)}")
 
     avg = df.mean(numeric_only=True)
 
-    # Comparison Chart
+    # Player vs Average
     st.subheader("📊 Player vs Average")
     comp_df = pd.DataFrame({
-        "Player": [goals, assists, row["influence"], row["creativity"], row["threat"]],
+        "Player": [row["goals"], row["assists"], row["influence"], row["creativity"], row["threat"]],
         "Average": [
             avg["goals"], avg["assists"],
             avg["influence"], avg["creativity"], avg["threat"]
@@ -108,22 +90,36 @@ if sport == "Football (EPL)":
 
     st.bar_chart(comp_df)
 
+    # 🔥 Performance Trend Graph
+    st.subheader("📈 Performance Trend")
+    trend_df = pd.DataFrame({
+        "Feature": ["Goals","Assists","Influence","Creativity","Threat"],
+        "Player": [row["goals"], row["assists"], row["influence"], row["creativity"], row["threat"]],
+        "Average": [
+            avg["goals"], avg["assists"],
+            avg["influence"], avg["creativity"], avg["threat"]
+        ]
+    }).set_index("Feature")
+
+    st.line_chart(trend_df)
+
+    # 🔥 Top Players
+    st.subheader("🏆 Top Players")
+    st.dataframe(df.sort_values("goals", ascending=False).head(10))
+
+    # 🔥 Distribution
+    st.subheader("📊 Goals Distribution")
+    st.bar_chart(df["goals"].value_counts())
+
     # Percentile
     st.subheader("📊 Ranking")
-    pct = (df["goals"] < goals).mean() * 100
+    pct = (df["goals"] < row["goals"]).mean() * 100
     rank = df["goals"].rank(ascending=False, method="min")
     player_rank = int(rank[df["name"] == player].values[0])
 
     col1, col2 = st.columns(2)
     col1.metric("Percentile", f"{round(pct,1)}%")
     col2.metric("Rank", f"{player_rank}/{len(df)}")
-
-    if pct > 85:
-        st.success("🔥 Elite Player")
-    elif pct > 60:
-        st.info("⭐ Good Player")
-    else:
-        st.warning("📈 Developing Player")
 
     # Player Comparison
     st.markdown("---")
@@ -134,10 +130,6 @@ if sport == "Football (EPL)":
 
     p1 = df[df["name"] == p1_name].iloc[0]
     p2 = df[df["name"] == p2_name].iloc[0]
-
-    col1, col2 = st.columns(2)
-    col1.metric(p1_name, int(p1["goals"]))
-    col2.metric(p2_name, int(p2["goals"]))
 
     comp = pd.DataFrame({
         p1_name: [p1["goals"], p1["assists"], p1["influence"]],
@@ -151,39 +143,32 @@ if sport == "Football (EPL)":
 # ======================
 elif sport == "Cricket (IPL)":
 
-    file_path = "data/player_stats.csv"
-    if not os.path.exists(file_path):
-        st.error("player_stats.csv missing")
-        st.stop()
-
-    df = pd.read_csv(file_path)
+    df = pd.read_csv("data/player_stats.csv")
 
     st.header("🏏 Cricket Analytics")
 
     player = st.selectbox("Select Player", df["batsman"])
     row = df[df["batsman"] == player].iloc[0]
 
-    runs = row["batsman_runs"]
-    sr = row["strike_rate"]
-
     # KPI
     col1, col2, col3 = st.columns(3)
-    col1.metric("Runs", int(runs))
-    col2.metric("Strike Rate", round(sr,1))
+    col1.metric("Runs", int(row["batsman_runs"]))
+    col2.metric("Strike Rate", round(row["strike_rate"],1))
     col3.metric("Wickets", int(row["wickets"]))
 
     # Prediction
     if st.button("Predict Impact"):
-        features = np.array([[runs, sr, row["wickets"], row["is_four"], row["is_six"]]])
+        features = np.array([[row["batsman_runs"], row["strike_rate"],
+                              row["wickets"], row["is_four"], row["is_six"]]])
         pred = model_c.predict(features)[0]
         st.success(f"🏏 Impact Score: {round(pred,2)}")
 
     avg = df.mean(numeric_only=True)
 
-    # Comparison
+    # Player vs Average
     st.subheader("📊 Player vs Average")
     comp_df = pd.DataFrame({
-        "Player": [runs, sr, row["wickets"]],
+        "Player": [row["batsman_runs"], row["strike_rate"], row["wickets"]],
         "Average": [
             avg["batsman_runs"], avg["strike_rate"], avg["wickets"]
         ]
@@ -191,8 +176,30 @@ elif sport == "Cricket (IPL)":
 
     st.bar_chart(comp_df)
 
+    # 🔥 Performance Trend Graph
+    st.subheader("📈 Performance Trend")
+    trend_df = pd.DataFrame({
+        "Feature": ["Runs","Strike Rate","Wickets","Fours","Sixes"],
+        "Player": [row["batsman_runs"], row["strike_rate"], row["wickets"], row["is_four"], row["is_six"]],
+        "Average": [
+            avg["batsman_runs"], avg["strike_rate"],
+            avg["wickets"], avg["is_four"], avg["is_six"]
+        ]
+    }).set_index("Feature")
+
+    st.line_chart(trend_df)
+
+    # 🔥 Top Players
+    st.subheader("🏆 Top Players")
+    st.dataframe(df.sort_values("batsman_runs", ascending=False).head(10))
+
+    # 🔥 Distribution
+    st.subheader("📊 Runs Distribution")
+    st.bar_chart(df["batsman_runs"].value_counts())
+
     # Percentile
-    pct = (df["batsman_runs"] < runs).mean() * 100
+    st.subheader("📊 Ranking")
+    pct = (df["batsman_runs"] < row["batsman_runs"]).mean() * 100
     rank = df["batsman_runs"].rank(ascending=False, method="min")
     player_rank = int(rank[df["batsman"] == player].values[0])
 
