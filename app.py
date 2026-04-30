@@ -121,53 +121,55 @@ if sport == "Football (EPL)":
                 st.error(f"Error in prediction: {e}")
 
 # ======================
-# 🏏 CRICKET SECTION
+# 🏏 CRICKET SECTION (UPDATED)
 # ======================
+
 elif sport == "Cricket (IPL)":
 
-    st.subheader("🏏 Cricket Player Performance Predictor")
+    st.subheader("🏏 Cricket Player Performance (Auto Mode)")
 
     if model_c is not None:
 
-        col1, col2 = st.columns(2)
+        # Load player stats
+        df_players = pd.read_csv("data/player_stats.csv")
 
-        with col1:
-            runs = st.number_input("Runs", 0, 5000)
-            strike_rate = st.number_input("Strike Rate", 0.0, 300.0)
+        # Dropdown
+        player = st.selectbox("Select Player", df_players["batsman"].unique())
 
-        with col2:
-            wickets = st.number_input("Wickets", 0, 500)
-            fours = st.number_input("Fours", 0, 500)
-            sixes = st.number_input("Sixes", 0, 300)
+        # Get selected player data
+        player_data = df_players[df_players["batsman"] == player].iloc[0]
 
-        if st.button("Predict Cricket Impact"):
+        # Show stats
+        col1, col2, col3 = st.columns(3)
+
+        col1.metric("Runs", int(player_data["batsman_runs"]))
+        col2.metric("Strike Rate", round(player_data["strike_rate"], 2))
+        col3.metric("Wickets", int(player_data["wickets"]))
+
+        col4, col5 = st.columns(2)
+
+        col4.metric("Fours", int(player_data["is_four"]))
+        col5.metric("Sixes", int(player_data["is_six"]))
+
+        if st.button("Predict Player Impact"):
 
             try:
-                features = np.array([[
-                    runs,
-                    strike_rate,
-                    wickets,
-                    fours,
-                    sixes
-                ]], dtype=float)
+                features = [[
+                    player_data["batsman_runs"],
+                    player_data["strike_rate"],
+                    player_data["wickets"],
+                    player_data["is_four"],
+                    player_data["is_six"]
+                ]]
+
+                features = np.array(features, dtype=float)
 
                 prediction = model_c.predict(features)[0]
 
                 st.success(f"🏏 Predicted Impact Score: {round(prediction, 2)}")
 
-                # Feature importance
-                st.subheader("📊 Feature Importance")
-
-                df_feat = pd.DataFrame({
-                    "Feature": ["Runs", "Strike Rate", "Wickets", "Fours", "Sixes"],
-                    "Importance": model_c.coef_
-                })
-
-                st.bar_chart(df_feat.set_index("Feature"))
-
             except Exception as e:
-                st.error(f"Error in prediction: {e}")
-
+                st.error(f"Error: {e}")
 # ======================
 # 📂 DATA EXPLORER
 # ======================
