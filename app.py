@@ -37,7 +37,7 @@ with st.sidebar:
         ["⚽ Football (EPL)", "🏏 Cricket (IPL)"]
     )
 
-    # 🔥 FIX: Map emoji label to logic-safe value
+    # ✅ FIX: Map emoji label → original values (DO NOT CHANGE LOGIC BELOW)
     if "Football" in sport:
         sport = "Football (EPL)"
     elif "Cricket" in sport:
@@ -45,15 +45,17 @@ with st.sidebar:
 
     st.markdown("---")
 
+    # 🎥 GIF / Visual Section
     st.markdown("## 🎬 Insights Zone")
 
     st.image(
-       "https://assets.sportsboom.com/England_bowler_Joe_Root_bowls_to_batsman_Mohammed_Siraj_3c07c8dad8.jpg",
+        "https://assets.sportsboom.com/England_bowler_Joe_Root_bowls_to_batsman_Mohammed_Siraj_3c07c8dad8.jpg",
         use_container_width=True
     )
 
     st.markdown("---")
 
+    # 📊 Info Section
     st.markdown("## 📊 About Dashboard")
     st.markdown("""
     - ⚽ Football Analytics  
@@ -64,6 +66,7 @@ with st.sidebar:
 
     st.markdown("---")
 
+    # 👤 Footer
     st.markdown("## 👨‍💻 Developer")
     st.markdown("Built with ❤️ using Streamlit")
 
@@ -135,13 +138,11 @@ if sport == "Football (EPL)":
     player = st.selectbox("Select Player", df["name"])
     row = df[df["name"] == player].iloc[0]
 
-    # KPI
     col1, col2, col3 = st.columns(3)
     col1.metric("Goals", int(row["goals"]))
     col2.metric("Assists", int(row["assists"]))
     col3.metric("Influence", round(row["influence"],1))
 
-    # Prediction
     if st.button("Predict Score"):
         features = np.array([[row["goals"], row["assists"], row["minutes"],
                               row["influence"], row["creativity"], row["threat"],
@@ -152,7 +153,6 @@ if sport == "Football (EPL)":
 
     avg = df.mean(numeric_only=True)
 
-    # Player vs Average
     st.subheader("📊 Player vs Average")
     comp_df = pd.DataFrame({
         "Player": [row["goals"], row["assists"], row["influence"], row["creativity"], row["threat"]],
@@ -164,7 +164,6 @@ if sport == "Football (EPL)":
 
     st.bar_chart(comp_df)
 
-    # 🔥 Performance Trend Graph
     st.subheader("📈 Performance Trend")
     trend_df = pd.DataFrame({
         "Feature": ["Goals","Assists","Influence","Creativity","Threat"],
@@ -177,15 +176,12 @@ if sport == "Football (EPL)":
 
     st.line_chart(trend_df)
 
-    # 🔥 Top Players
     st.subheader("🏆 Top Players")
     st.dataframe(df.sort_values("goals", ascending=False).head(10))
 
-    # 🔥 Distribution
     st.subheader("📊 Goals Distribution")
     st.bar_chart(df["goals"].value_counts())
 
-    # Percentile
     st.subheader("📊 Ranking")
     pct = (df["goals"] < row["goals"]).mean() * 100
     rank = df["goals"].rank(ascending=False, method="min")
@@ -195,7 +191,6 @@ if sport == "Football (EPL)":
     col1.metric("Percentile", f"{round(pct,1)}%")
     col2.metric("Rank", f"{player_rank}/{len(df)}")
 
-    # Player Comparison
     st.markdown("---")
     st.subheader("⚔️ Player Comparison")
 
@@ -224,13 +219,11 @@ elif sport == "Cricket (IPL)":
     player = st.selectbox("Select Player", df["batsman"])
     row = df[df["batsman"] == player].iloc[0]
 
-    # KPI
     col1, col2, col3 = st.columns(3)
     col1.metric("Runs", int(row["batsman_runs"]))
     col2.metric("Strike Rate", round(row["strike_rate"],1))
     col3.metric("Wickets", int(row["wickets"]))
 
-    # Prediction
     if st.button("Predict Impact"):
         features = np.array([[row["batsman_runs"], row["strike_rate"],
                               row["wickets"], row["is_four"], row["is_six"]]])
@@ -239,7 +232,6 @@ elif sport == "Cricket (IPL)":
 
     avg = df.mean(numeric_only=True)
 
-    # Player vs Average
     st.subheader("📊 Player vs Average")
     comp_df = pd.DataFrame({
         "Player": [row["batsman_runs"], row["strike_rate"], row["wickets"]],
@@ -250,7 +242,6 @@ elif sport == "Cricket (IPL)":
 
     st.bar_chart(comp_df)
 
-    # 🔥 Performance Trend Graph
     st.subheader("📈 Performance Trend")
     trend_df = pd.DataFrame({
         "Feature": ["Runs","Strike Rate","Wickets","Fours","Sixes"],
@@ -263,15 +254,12 @@ elif sport == "Cricket (IPL)":
 
     st.line_chart(trend_df)
 
-    # 🔥 Top Players
     st.subheader("🏆 Top Players")
     st.dataframe(df.sort_values("batsman_runs", ascending=False).head(10))
 
-    # 🔥 Distribution
     st.subheader("📊 Runs Distribution")
     st.bar_chart(df["batsman_runs"].value_counts())
 
-    # Percentile
     st.subheader("📊 Ranking")
     pct = (df["batsman_runs"] < row["batsman_runs"]).mean() * 100
     rank = df["batsman_runs"].rank(ascending=False, method="min")
@@ -281,7 +269,6 @@ elif sport == "Cricket (IPL)":
     col1.metric("Percentile", f"{round(pct,1)}%")
     col2.metric("Rank", f"{player_rank}/{len(df)}")
 
-    # Player Comparison
     st.markdown("---")
     st.subheader("⚔️ Player Comparison")
 
