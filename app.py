@@ -9,6 +9,63 @@ import os
 # ======================
 st.set_page_config(page_title="Sports AI Dashboard", layout="wide")
 
+st.markdown("""
+<style>
+.sidebar-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-top: 10px;
+}
+.sidebar-section {
+    font-size: 14px;
+    color: gray;
+    margin-bottom: 5px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ======================
+# 🚀 PREMIUM SIDEBAR
+# ======================
+
+with st.sidebar:
+
+    st.markdown("## ⚙️ Navigation")
+
+    sport = st.radio(
+        "Select Sport",
+        ["⚽ Football (EPL)", "🏏 Cricket (IPL)"]
+    )
+
+    st.markdown("---")
+
+    # 🎥 GIF / Visual Section
+    st.markdown("## 🎬 Insights Zone")
+
+    st.image(
+        "https://media.giphy.com/media/3o7btPCcdNniyf0ArS/giphy.gif",
+        use_container_width=True
+    )
+
+    st.markdown("---")
+
+    # 📊 Info Section
+    st.markdown("## 📊 About Dashboard")
+    st.markdown("""
+    - ⚽ Football Analytics  
+    - 🏏 Cricket Analytics  
+    - 🤖 ML Predictions  
+    - 📈 Player Insights  
+    """)
+
+    st.markdown("---")
+
+    # 👤 Footer
+    st.markdown("## 👨‍💻 Developer")
+    st.markdown("Built with ❤️ using Streamlit")
+
+
+
 # ======================
 # CUSTOM CSS
 # ======================
