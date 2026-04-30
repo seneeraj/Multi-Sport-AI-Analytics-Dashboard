@@ -37,8 +37,26 @@ model_c = load_model("models/cricket_model.pkl")
 # ======================
 # HEADER
 # ======================
-st.markdown('<p class="title">⚽🏏 Multi-Sport AI Analytics Dashboard</p>', unsafe_allow_html=True)
-st.markdown("---")
+st.markdown("""
+<style>
+.main-title {
+    text-align: center;
+    font-size: 48px;
+    font-weight: 800;
+    color: #1f77b4;
+    margin-bottom: 10px;
+}
+
+.sub-title {
+    text-align: left;
+    font-size: 30px;
+    font-weight: 700;
+    margin-top: 20px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="main-title">⚽🏏 Multi-Sport AI Analytics Dashboard</div>', unsafe_allow_html=True)
 
 sport = st.sidebar.selectbox("Select Sport", ["Football (EPL)", "Cricket (IPL)"])
 
