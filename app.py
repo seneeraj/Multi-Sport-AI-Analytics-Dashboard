@@ -179,7 +179,9 @@ with tabs[0]:
 # CRICKET TAB
 # ======================
 with tabs[1]:
+st.image("https://assets.sportsboom.com/England_bowler_Joe_Root_bowls_to_batsman_Mohammed_Siraj_3c07c8dad8.jpg", use_container_width=True)
 
+    st.header("🏏 Cricket Analytics")
     df = pd.read_csv("data/player_stats.csv")
 
     st.header("🏏 Cricket Analytics")
